@@ -4,21 +4,48 @@ let searchRes = []
 function handleSearch(){
     searchRes = [];
     const input = document.querySelector('#searchInput');
-    const v = input.value;
+    let v = input.value;
     if(v == ""){
         updateHTML();
         return;
     }
-    const {countries, temples} = data;
-    addMatches(countries, v);
-    addMatches(temples, v);
-       for (let i = 0; i < countries.length; i++) {
-            const country = countries[i];
+    v = v.toLowerCase()
+    const {countries, temples, beaches} = data;
+    let words = v.split(' ').filter(e=>e);
+    const countryIndex = words.indexOf('country');
+    const templeIndex = words.indexOf('temple');
+    const beachIndex = words.findIndex((s)=>s.includes('beach'));
+    const cityIndex = words.indexOf('city');
+    if(countryIndex > -1){
+        words.splice(countryIndex,1);
+        addMatches(countries, words);
+    }else if(templeIndex > -1){
+        words.splice(templeIndex,1);
+        addMatches(temples, words);
+    }
+    else if(beachIndex > -1){
+        words.splice(beachIndex,1);
+        addMatches(beaches, words);
+    }
+    else if(cityIndex > -1){
+        words.splice(cityIndex,1);
+        for (let i = 0; i < countries.length; i++) {
+        const country = countries[i];
             if(country.cities){
-                addMatches(country.cities, v);
+                addMatches(country.cities, words);
             }
        }
-    console.log(v, searchRes)
+    }else{
+        addMatches(countries, words);
+        addMatches(temples, words);
+        addMatches(beaches, words);
+           for (let i = 0; i < countries.length; i++) {
+                const country = countries[i];
+                if(country.cities){
+                    addMatches(country.cities, words);
+                }
+           }
+    }
     updateHTML();
 }
 function updateHTML(){
@@ -38,24 +65,26 @@ function updateHTML(){
         recc.innerHTML = myHTML;
     }
 }
-function addMatches(arr = [{name:"", description:""}], s = ""){
-    s = s.toLowerCase();
+function addMatches(arr = [{name:"", description:""}], words = []){
     for (let i = 0; i < arr.length; i++) {
         const row = arr[i];
         const {name, description} = row;
         const n = name.toLowerCase();
         const d = (description) ? description.toLowerCase() : "";
 
-        const splitWords = s.split(' ').filter(e=>e);
         let matches = false;
-        for (let j = 0; j < splitWords.length; j++) {
-            const word = splitWords[j];
-            //match every word
-            if(n.indexOf(word) > -1 || d.indexOf(word) > -1){
-                matches = true;
-            }else{
-                matches = false;
-                break;
+        if(words.length == 0){
+            matches = true;
+        }else{
+            for (let j = 0; j < words.length; j++) {
+                const word = words[j];
+                //match every word
+                if(n.indexOf(word) > -1 || d.indexOf(word) > -1){
+                    matches = true;
+                }else{
+                    matches = false;
+                    break;
+                }
             }
         }
         if(matches){
@@ -78,9 +107,11 @@ document.addEventListener('readystatechange', function() {
         const input = document.querySelector('#searchInput');
         if(input){
             input.onkeypress = (e)=>{
-                setTimeout(()=>{
-                    handleSearch();
-                }, 200)
+                if(e.key == "Enter"){
+                    setTimeout(()=>{
+                        handleSearch();
+                    }, 200)
+                }
             }
             input.onclick = (e)=>{
                 setTimeout(()=>{
