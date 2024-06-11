@@ -12,7 +12,7 @@ function handleSearch(){
     v = v.toLowerCase()
     const {countries, temples, beaches} = data;
     let words = v.split(' ').filter(e=>e);
-    const countryIndex = words.indexOf('country');
+    let countryIndex = words.findIndex((s)=>s.includes('country')||s.includes('countries'));
     const templeIndex = words.indexOf('temple');
     const beachIndex = words.findIndex((s)=>s.includes('beach'));
     const cityIndex = words.indexOf('city');
