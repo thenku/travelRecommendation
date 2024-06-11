@@ -55,7 +55,7 @@ function updateHTML(){
         let myHTML = '';
         for (let i = 0; i < searchRes.length; i++) {
             const {name, description, imageUrl} = searchRes[i];
-            myHTML += `<div><div><img src="https://picsum.photos/seed/${name}s/200/300"/></div>
+            myHTML += `<div><div><img src="${imageUrl}"/></div>
             <div><h2>${name}</h2>`;
             if(description){
                 myHTML+= `<p>${description}</p>`
